@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gestor de Hojas Excel — Login</title>
+
+  <!-- SheetJS (Excel en navegador) -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+  <!-- Estilos (moderno profesional) -->
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --accent:#4f7df3;
+      --accent-2:#7cc6ff;
+      --muted:#6b7280;
+      --success:#16a34a;
+      --danger:#ef4444;
+      font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      background: linear-gradient(180deg, rgba(127,168,255,0.10) 0%, rgba(255,255,255,0.0) 70%), var(--bg);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px;
+    }
+
+    .container{
+      width:100%;
+      max-width:1000px;
+      background:transparent;
+    }
+
+    header.app-header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .logo {
+      width:56px;height:56px;border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;
+      box-shadow: 0 6px 18px rgba(79,125,243,0.18);
+    }
+
+    h1.title { margin:0; font-size:20px; color:#0f172a; }
+    p.lead { margin:0; color:var(--muted); font-size:13px }
+
+    /* layout */
+    .card {
+      background:var(--card);
+      border-radius:14px;
+      padding:22px;
+      box-shadow: 0 6px 24px rgba(15,23,42,0.06);
+    }
+
+    /* login */
+    .login-wrap { max-width:420px; margin: 0 auto; }
+    .form-group { margin-bottom:12px; }
+    label{ display:block; font-size:13px; color:#263240; margin-bottom:6px; }
+    input[type="text"], input[type="password"], input[type="file"], select {
+      width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6eef8; background:#fbfdff;
+      font-size:14px; color:#0f172a;
+    }
+    button.btn {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; background:var(--accent); color:white; border:none; border-radius:10px;
+      cursor:pointer; font-weight:600; box-shadow: 0 6px 18px rgba(79,125,243,0.18);
+    }
+    button.btn.secondary {
+      background:#eef4ff; color:var(--accent); box-shadow:none; border:1px solid rgba(79,125,243,0.14);
+    }
+    .small { font-size:13px; color:var(--muted); }
+
+    /* layout after login */
+    .grid { display:grid; grid-template-columns: 1fr 360px; gap:18px; align-items:start; margin-top:12px; }
+    .actions { display:flex; flex-direction:column; gap:12px; }
+    .card .section-title { font-weight:700; color:#0f172a; margin-bottom:12px; font-size:15px; }
+
+    .action-card {
+      padding:16px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,250,255,0.9));
+      border: 1px solid rgba(12,34,80,0.04);
+      display:flex; flex-direction:column; gap:10px;
+    }
+
+    .file-list { max-height:260px; overflow:auto; padding:8px; border-radius:8px; border:1px dashed #e6eef8; background:#fbfdff; }
+    .file-item { padding:8px 10px; border-radius:8px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; }
+    .hint { font-size:12px; color:var(--muted); }
+
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px;
+    }
+    .logout { background:transparent; border:none; color:var(--muted); cursor:pointer; font-weight:600; }
+
+    .hidden { display:none; }
+
+    footer { margin-top:14px; text-align:center; color:var(--muted); font-size:13px; }
+    @media(max-width:880px){
+      .grid{ grid-template-columns: 1fr; }
+      .login-wrap{ padding:0 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo">EX</div>
+        <div>
+          <h1 class="title">Gestor de Hojas Excel</h1>
+          <p class="lead">Separar y unir hojas — accesible desde cualquier navegador</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- LOGIN -->
+    <div id="screen-login" class="card login-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div>
+          <div style="font-weight:700;color:#0f172a;font-size:16px">Iniciar sesión</div>
+          <div class="small">Accede con tu usuario</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="usuario">Usuario</label>
+        <input id="usuario" type="text" placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label for="pass">Contraseña</label>
+        <input id="pass" type="password" placeholder="••••••">
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;margin-top:8px;">
+        <button class="btn" id="btnLogin">Iniciar sesión</button>
+        <button class="btn secondary" id="btnDemo">Mostrar credenciales</button>
+        <div style="flex:1"></div>
+      </div>
+      <p class="hint" style="margin-top:12px">Usuario por defecto: <strong>admin</strong> / Contraseña: <strong>1234</strong></p>
+    </div>
+
+    <!-- APP MAIN (oculto al inicio) -->
+    <div id="screen-app" class="hidden">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-weight:700;font-size:16px">Panel principal</div>
+          <div class="small" id="welcomeText">Bienvenido</div>
+        </div>
+        <div>
+          <button class="logout" id="btnLogout">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- LEFT: acciones principales -->
+        <div>
+          <div class="card action-card">
+            <div class="section-title">Acciones</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn" id="navSeparar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h8M4 18h16" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg> Separar hojas</button>
+              <button class="btn" id="navUnir"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 8h18M3 16h14" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg> Unir hojas</button>
+            </div>
+            <div style="margin-top:10px;" class="small">Sube tus archivos y ejecuta las acciones. Todo ocurre en tu navegador.</div>
+          </div>
+
+          <!-- Separar pantalla -->
+          <div id="panel-separar" class="card" style="margin-top:12px;">
+            <div class="section-title">Separar hojas de un libro</div>
+
+            <div class="form-group">
+              <label>Selecciona un archivo (.xlsx)</label>
+              <input id="inputSeparar" type="file" accept=".xlsx,.xls" />
+            </div>
+
+            <div id="separarPreview" class="file-list" style="display:none;margin-top:8px"></div>
+
+            <div style="margin-top:10px;display:flex;gap:10px;">
+              <button class="btn" id="btnPreviewSeparar">Leer y mostrar hojas</button>
+              <button class="btn secondary" id="btnDoSeparar">Generar archivos</button>
+            </div>
+
+            <div id="separarMsg" style="margin-top:10px" class="small"></div>
+          </div>
+
+          <!-- Unir pantalla -->
+          <div id="panel-unir" class="card" style="margin-top:12px; display:none;">
+            <div class="section-title">Unir hojas de varios libros</div>
+
+            <div class="form-group">
+              <label>Selecciona uno o más archivos (.xlsx)</label>
+              <input id="inputUnir" type="file" accept=".xlsx,.xls" multiple />
+            </div>
+
+            <div id="unirPreview" class="file-list" style="display:none;margin-top:8px"></div>
+
+            <div style="margin-top:10px;display:flex;gap:10px;">
+              <button class="btn" id="btnPreviewUnir">Leer y listar hojas</button>
+              <button class="btn secondary" id="btnDoUnir">Generar libro unido</button>
+            </div>
+            <div id="unirMsg" style="margin-top:10px" class="small"></div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: ayuda y acciones secundarias -->
+        <div>
+          <div class="card" style="margin-bottom:12px;">
+            <div class="section-title">Instrucciones rápidas</div>
+            <ol style="margin:0 0 6px 18px;color:var(--muted);font-size:14px">
+              <li>Inicia sesión con tu usuario.</li>
+              <li>Ingresa a <strong>Separar hojas</strong> o <strong>Unir hojas</strong>.</li>
+              <li>Sube archivos y presiona los botones para realizar la acción.</li>
+            </ol>
+            <div class="small">La descarga se inicia automáticamente una vez que se genera el/los archivos.</div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">Configuración</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="small">Usuario actual: <strong id="confUser">admin</strong></div>
+              <div class="small">Contraseña: <strong id="confPass">1234</strong></div>
+              <button class="btn secondary" id="btnChangeCred">Cambiar credenciales</button>
+            </div>
+            <div id="changeCredArea" class="hidden" style="margin-top:10px">
+              <div class="form-group"><label>Nuevo usuario</label><input id="newUser" type="text" /></div>
+              <div class="form-group"><label>Nueva contraseña</label><input id="newPass" type="text" /></div>
+              <div style="display:flex;gap:8px"><button class="btn" id="saveCred">Guardar</button><button class="btn secondary" id="cancelCred">Cancelar</button></div>
+              <div class="small" style="margin-top:8px">Nota: las credenciales se guardan en memoria del navegador (session) y se perderán si se cierra la pestaña. Para persistencia, te enseño cómo guardarlo en localStorage si quieres.</div>
+            </div>
+          </div>
+
+          <footer>
+            Desarrollado para presentación • Puedes publicarlo en GitHub Pages
+          </footer>
+        </div> <!-- end right -->
+      </div> <!-- end grid -->
+    </div> <!-- end app -->
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
